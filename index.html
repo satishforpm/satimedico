@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Photokira – Edit • Create • Inspire</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Photokira – Edit, Create, Inspire. Resize, compress, make passport photos and PDFs online.">
+<meta name="theme-color" content="#5b21d6"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Photokira"><meta property="og:title" content="Photokira – Edit • Create • Inspire">
+<meta property="og:description" content="Your all-in-one photo editing platform."><meta property="og:url" content="https://YOUR-DOMAIN.com/"><meta property="og:image" content="https://YOUR-DOMAIN.com/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://YOUR-DOMAIN.com/og-image.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="style.css"></head><body>
+<header><img src="logo.png" alt="Photokira logo"><div class="wm">Photo<b>kira</b></div><div class="sp"></div>
+<button class="btn o" id="th" aria-label="Theme">🌓</button><button class="btn" id="hb" onclick="go('login')">Login</button></header>
+<main>
+<section class="v on" id="v-home"><div class="hero"><img src="logo.png" alt="Photokira" style="width:230px;max-width:70%"><h1>Your All-in-One Photo Editing Platform</h1><p>Create, resize, compress and edit your photos easily with <b>Photokira</b>.</p><button class="btn" onclick="go('tools')">Open Tools</button></div><div class="grid" id="hg"></div></section>
+<section class="v" id="v-tools"><h2>All Tools</h2><div class="grid" id="tg"></div></section>
+
+<section class="v" id="v-resizer"><h2>📐 Photo Resizer</h2><div class="card"><input type="file" accept="image/jpeg,image/png,image/webp" data-t="resizer"><div id="rsi"></div>
+<div class="row"><div><label>Width (px)</label><input id="rw" type="number"></div><div><label>Height (px)</label><input id="rh" type="number"></div></div>
+<label><input type="checkbox" id="rl" checked> Keep aspect ratio</label><label>Format</label><select id="rf"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select>
+<button class="btn" onclick="doResize()">Process</button><div id="rout"></div></div></section>
+
+<section class="v" id="v-compressor"><h2>🗜️ Image Compressor</h2><div class="card"><input type="file" accept="image/jpeg,image/png,image/webp" data-t="compressor"><div id="csi"></div>
+<label>Target size</label><select id="ck"><option>500</option><option>300</option><option>200</option><option>100</option><option value="c">Custom…</option></select><input id="cc" type="number" placeholder="Custom KB" style="display:none">
+<label>Format</label><select id="cf"><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select><button class="btn" onclick="doComp('c')">Compress</button><div id="cout"></div></div></section>
+
+<section class="v" id="v-to100"><h2>⚡ Image to 100 KB</h2><div class="card"><input type="file" accept="image/jpeg,image/png,image/webp" data-t="to100"><div id="hsi"></div><button class="btn" onclick="doComp('h')">Compress to 100 KB</button><div id="hout"></div></div></section>
+
+<section class="v" id="v-pdf"><h2>📄 Image to PDF</h2><div class="card"><input type="file" id="pf" accept="image/jpeg,image/png,image/webp" multiple><div id="pl"></div>
+<div class="row"><div><label>Page</label><select id="ps"><option>a4</option><option>letter</option></select></div><div><label>Orientation</label><select id="po"><option value="p">Portrait</option><option value="l">Landscape</option></select></div></div>
+<label>Margin (mm)</label><input id="pm" type="number" value="10"><button class="btn" onclick="doPdf()">Create PDF</button> <button class="btn o" onclick="pfiles=[];rl()">Clear all</button><div id="pout"></div></div></section>
+
+<section class="v" id="v-passport"><h2>🪪 Passport Photo Maker</h2><div class="card"><input type="file" accept="image/jpeg,image/png,image/webp" data-t="passport"><div id="psi"></div>
+<div class="row"><div><label>Width (mm)</label><input id="aw" type="number" value="35"></div><div><label>Height (mm)</label><input id="ah" type="number" value="45"></div></div>
+<label>Background (fills only transparent areas of PNG – AI background removal not connected yet)</label><select id="ab"><option value="#ffffff">White</option><option value="#1e4fd8">Blue</option><option value="#d12b2b">Red</option></select>
+<label>Zoom</label><input id="az" type="range" min="1" max="3" step=".05" value="1"><label>Move left/right</label><input id="ax" type="range" min="-1" max="1" step=".02" value="0"><label>Move up/down</label><input id="ay" type="range" min="-1" max="1" step=".02" value="0">
+<canvas id="ac" class="pv"></canvas><div class="row"><button class="btn" onclick="dlP(0)">Download photo</button><button class="btn o" onclick="dlP(1)">A4 print sheet</button></div></div></section>
+
+<section class="v" id="v-ai"><h2 id="ait">AI tool</h2><div class="card"><p>🔧 This tool needs a real AI background-removal service connected through a secure Supabase Edge Function. No provider is configured yet, so Photokira will not fake the result.</p></div></section>
+
+<section class="v" id="v-login"><h2>Login</h2><div class="card"><input id="le" type="email" name="email" autocomplete="username" placeholder="Email"><input id="lp" type="password" name="password" autocomplete="current-password" placeholder="Password"><label><input type="checkbox" id="lr"> Remember me</label><br><br>
+<button class="btn" onclick="login()">Login</button> <button class="btn o" onclick="go('signup')">Sign up</button><p><a class="l" onclick="go('forgot')">Forgot password?</a></p><div id="lm"></div></div></section>
+<section class="v" id="v-signup"><h2>Sign up</h2><div class="card"><input id="se" type="email" placeholder="Email"><input id="sp" type="password" placeholder="Password (min 8)"><button class="btn" onclick="signup()">Send 6-digit code</button><div id="sm"></div></div></section>
+<section class="v" id="v-otp"><h2>Verify email</h2><div class="card"><p>Enter the 6-digit code sent to <b id="oe"></b></p><div id="otp"></div><br><button class="btn" onclick="verify()">Verify</button> <button class="btn o" id="rs" onclick="resend()">Resend</button><div id="om"></div></div></section>
+<section class="v" id="v-forgot"><h2>Forgot password</h2><div class="card"><input id="fe" type="email" placeholder="Email"><button class="btn" onclick="forgot()">Send reset link</button><div id="fm"></div></div></section>
+<section class="v" id="v-reset"><h2>New password</h2><div class="card"><input id="np" type="password" placeholder="New password (min 8)"><button class="btn" onclick="setPw('np','xm')">Save</button><div id="xm"></div></div></section>
+<section class="v" id="v-dash"><h2>My Photokira</h2><div class="card"><b id="du"></b><p id="dr" style="color:var(--mu)"></p></div>
+<div class="card"><h3>Change password</h3><input id="cp" type="password" placeholder="New password"><button class="btn" onclick="setPw('cp','dm')">Update password</button>
+<h3>Change email</h3><input id="ce" type="email" placeholder="New email"><button class="btn" onclick="chEmail()">Update email</button><div id="dm"></div></div><button class="btn o" onclick="logout()">Logout</button></section>
+</main>
+<nav><a data-g="home" onclick="go('home')"><span>🏠</span>Home</a><a data-g="tools" onclick="go('tools')"><span>🧰</span>Tools</a><a data-g="dash" onclick="go('dash')"><span>📁</span>Projects</a><a data-g="dash" onclick="go('dash')"><span>🕘</span>History</a><a data-g="dash" onclick="go('dash')"><span>👤</span>Profile</a></nav>
+<script src="app.js"></script></body></html>
